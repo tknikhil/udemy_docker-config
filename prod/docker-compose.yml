@@ -1,0 +1,71 @@
+version : "3.8"
+
+services :
+    
+    configservice:
+        image: "ultdocker123/configservice:latest"
+        mem_limit: 700m
+        ports:
+            - "8071:8071"
+        networks:
+            - eazybank
+    
+    accounts :
+        image: "ultdocker123/accounts:latest"
+        mem_limit: 700m
+        ports: 
+            - "9000:9000"
+        networks:
+            - eazybank
+        depends_on:
+            - configservice
+        deploy:
+            restart_policy:
+                condition: on-failure
+                delay: 5s
+                max_attempts: 3
+                window: 120s
+        environment:
+            SPRING_PROFILES_ACTIVE: prod
+            SPRING_CONFIG_IMPORT: configserver:http://configservice:8071/
+            
+    loan :
+        image: "ultdocker123/loan:latest"
+        mem_limit: 700m
+        ports: 
+            - "9100:9100"
+        networks:
+            - eazybank
+        depends_on:
+            - configservice
+        deploy:
+            restart_policy:
+                condition: on-failure
+                delay: 5s
+                max_attempts: 3
+                window: 120s
+        environment:
+            SPRING_PROFILES_ACTIVE: prod
+            SPRING_CONFIG_IMPORT: configserver:http://configservice:8071/
+            
+    cards :
+        image: "ultdocker123/cards:latest"
+        mem_limit: 700m
+        ports: 
+            - "9200:9200"
+        networks:
+            - eazybank
+        depends_on:
+            - configservice
+        deploy:
+            restart_policy:
+                condition: on-failure
+                delay: 5s
+                max_attempts: 3
+                window: 120s
+        environment:
+            SPRING_PROFILES_ACTIVE: prod
+            SPRING_CONFIG_IMPORT: configserver:http://configservice:8071/
+
+networks:
+    eazybank:
