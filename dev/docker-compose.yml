@@ -9,12 +9,11 @@ services :
             - "8071:8071"
         networks:
             - eazybank
-    
-    accounts :
-        image: "ultdocker123/accounts:latest"
+    eurekaserver:
+        image: "ultdocker123/eurekaserver:latest"
         mem_limit: 700m
         ports: 
-            - "9000:9000"
+            - "8888:8888"
         networks:
             - eazybank
         depends_on:
@@ -28,6 +27,27 @@ services :
         environment:
             SPRING_PROFILES_ACTIVE: dev
             SPRING_CONFIG_IMPORT: configserver:http://configservice:8071/
+            
+    accounts :
+        image: "ultdocker123/accounts:latest"
+        mem_limit: 700m
+        ports: 
+            - "9000:9000"
+        networks:
+            - eazybank
+        depends_on:
+            - configservice
+            - eurekaserver
+        deploy:
+            restart_policy:
+                condition: on-failure
+                delay: 5s
+                max_attempts: 3
+                window: 120s
+        environment:
+            SPRING_PROFILES_ACTIVE: dev
+            SPRING_CONFIG_IMPORT: configserver:http://configservice:8071/
+            EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eurekaserver:8888/eureka/
             
     loan :
         image: "ultdocker123/loan:latest"
@@ -38,6 +58,7 @@ services :
             - eazybank
         depends_on:
             - configservice
+            - eurekaserver
         deploy:
             restart_policy:
                 condition: on-failure
@@ -47,6 +68,7 @@ services :
         environment:
             SPRING_PROFILES_ACTIVE: dev
             SPRING_CONFIG_IMPORT: configserver:http://configservice:8071/
+            EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eurekaserver:8888/eureka/
             
     cards :
         image: "ultdocker123/cards:latest"
@@ -57,6 +79,7 @@ services :
             - eazybank
         depends_on:
             - configservice
+            - eurekaserver
         deploy:
             restart_policy:
                 condition: on-failure
@@ -66,6 +89,7 @@ services :
         environment:
             SPRING_PROFILES_ACTIVE: dev
             SPRING_CONFIG_IMPORT: configserver:http://configservice:8071/
+            EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eurekaserver:8888/eureka/
             
 networks:
     eazybank:
