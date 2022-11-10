@@ -49,6 +49,28 @@ services :
             SPRING_PROFILES_ACTIVE: default
             SPRING_CONFIG_IMPORT: configserver:http://configservice:8071/
             EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eurekaserver:8888/eureka/
+# go with one instance it will make local system slow 
+#         
+#    accounts1 :
+#        image: "ultdocker123/accounts:latest"
+#        mem_limit: 700m
+#        ports: 
+#            - "9001:9000"
+#        networks:
+#            - eazybank
+#        depends_on:
+#            - configservice
+#            - eurekaserver
+#        deploy:
+#            restart_policy:
+#                condition: on-failure
+#                delay: 40s
+#                max_attempts: 3
+#                window: 120s
+#        environment:
+#            SPRING_PROFILES_ACTIVE: default
+#            SPRING_CONFIG_IMPORT: configserver:http://configservice:8071/
+#            EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eurekaserver:8888/eureka/
             
     loan :
         image: "ultdocker123/loan:latest"
