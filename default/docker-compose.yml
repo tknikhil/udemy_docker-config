@@ -22,7 +22,7 @@ services :
         deploy:
             restart_policy:
                 condition: on-failure
-                delay: 5s
+                delay: 15s
                 max_attempts: 3
                 window: 120s
         environment:
@@ -42,7 +42,7 @@ services :
         deploy:
             restart_policy:
                 condition: on-failure
-                delay: 5s
+                delay: 30s
                 max_attempts: 3
                 window: 120s
         environment:
@@ -85,7 +85,7 @@ services :
         deploy:
             restart_policy:
                 condition: on-failure
-                delay: 5s
+                delay: 30s
                 max_attempts: 3
                 window: 120s
         environment:
@@ -106,9 +106,33 @@ services :
         deploy:
             restart_policy:
                 condition: on-failure
-                delay: 5s
+                delay: 30s
                 max_attempts: 3
                 window: 120s
+        environment:
+            SPRING_PROFILES_ACTIVE: default
+            SPRING_CONFIG_IMPORT: configserver:http://configservice:8071/
+            EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eurekaserver:8888/eureka/
+
+    gatewayserver :
+        image: "ultdocker123/gatewayserver:latest"
+        mem_limit: 700m
+        ports: 
+            - "9999:9999"
+        networks:
+            - eazybank
+        depends_on:
+            - configservice
+            - eurekaserver
+            - cards
+            - loan
+            - accounts
+        deploy:
+            restart_policy:
+                condition: on-failure
+                delay: 45s
+                max_attempts: 3
+                window: 180s
         environment:
             SPRING_PROFILES_ACTIVE: default
             SPRING_CONFIG_IMPORT: configserver:http://configservice:8071/
